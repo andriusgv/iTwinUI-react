@@ -18,6 +18,10 @@ export type MiddleTextTruncationProps = {
    * @default 6
    */
   endCharsCount?: number;
+  /**
+   * Callback fired when text is truncated.
+   */
+  onTruncate?: () => void;
 } & CommonProps;
 
 /**
@@ -27,12 +31,12 @@ export type MiddleTextTruncationProps = {
  * <MiddleTextTruncation text='ThisIsMyVeryLongFileName.dgn' />
  */
 export const MiddleTextTruncation = (props: MiddleTextTruncationProps) => {
-  const { text, endCharsCount = 6, style, ...rest } = props;
-
+  const { text, endCharsCount = 6, onTruncate, style, ...rest } = props;
   const [ref, visibleCount] = useOverflow(text);
 
   const truncatedText = React.useMemo(() => {
     if (visibleCount < text.length) {
+      onTruncate?.();
       return `${text.substring(
         0,
         visibleCount - endCharsCount - ELLIPSIS_CHAR.length,
@@ -40,7 +44,7 @@ export const MiddleTextTruncation = (props: MiddleTextTruncationProps) => {
     } else {
       return text;
     }
-  }, [endCharsCount, text, visibleCount]);
+  }, [endCharsCount, onTruncate, text, visibleCount]);
 
   return (
     <span
